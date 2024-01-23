@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import React, { useState } from "react";
 import { faker } from "@faker-js/faker";
 import "./styles.css";
 
@@ -50,7 +50,7 @@ function CompanyItem({ company, defaultVisibility }) {
     );
 }
 
-function List({ title, items }) {
+function List({ title, items, render }) {
     const [isOpen, setIsOpen] = useState(true);
     const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -69,16 +69,8 @@ function List({ title, items }) {
                     {isOpen ? <span>&or;</span> : <span>&and;</span>}
                 </button>
             </div>
-            {isOpen && (
-                <ul className="list">
-                    {displayItems.map(product => (
-                        <ProductItem
-                            key={product.productName}
-                            product={product}
-                        />
-                    ))}
-                </ul>
-            )}
+            {/* We take our function which we give into map method, */}
+            {isOpen && <ul className="list">{displayItems.map(render)}</ul>}
 
             <button onClick={() => setIsCollapsed(isCollapsed => !isCollapsed)}>
                 {isCollapsed ? `Show all ${items.length}` : "Show less"}
@@ -91,9 +83,31 @@ export default function App() {
     return (
         <div>
             <h1>Render Props Demo</h1>
-
             <div className="col-2">
-                <List title="Products" items={products} />
+                <List
+                    title="Products"
+                    items={products}
+                    // In list we pass a render method with mapped function
+                    render={product => (
+                        <ProductItem
+                            key={product.productName}
+                            product={product}
+                        />
+                    )}
+                />
+
+                <List
+                    title="Companies"
+                    items={companies}
+                    // In list we pass a render method with mapped function
+                    render={company => (
+                        <CompanyItem
+                            key={company.companyName}
+                            company={company}
+                            defaultVisibility={false}
+                        />
+                    )}
+                />
             </div>
         </div>
     );
